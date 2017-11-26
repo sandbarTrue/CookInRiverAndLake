@@ -8,7 +8,11 @@ import lombok.Data;
 @Data
 public class Scence {
     private String name;
-    private String ablity;
+    private Integer meet;
+    private Integer rice;
+    private Integer fish;
+    private Integer vege;
     private Integer level;
+    private Integer choosed;
 
 }
