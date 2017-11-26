@@ -23,9 +23,7 @@ public class Main {
          //分配任务
          String result= allocatingTask(scences,cooks,menus);
          System.out.println(result);
-
      }
-
      public static void init(File dir,ArrayList<Scence> scences,ArrayList<Cook> cooks,ArrayList<Menu> menus){
         Excel2JSON excelHelper = Excel2JSON.getExcel2JSONHelper();
         //dir文件，0代表是第一行为保存到数据库或者实体类的表头，一般为英文的字符串，2代表是第二种模板，
