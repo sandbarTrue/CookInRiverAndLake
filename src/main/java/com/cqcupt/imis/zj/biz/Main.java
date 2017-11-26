@@ -62,33 +62,35 @@ public class Main {
     static  String allocatingTask(ArrayList<Scence> scences,ArrayList<Cook>
                                   cooks,ArrayList<Menu> menus) throws Exception {
          String result="result:";
-        Map<String,List<String>> map=getCookForMenu(cooks,menus);
-        for (Map.Entry<String,List<String>> entry : map.entrySet()) {
-            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
-
-                for(String name:entry.getValue()) {
+        getCookForMenu(cooks,menus);
+        for (Menu menu:menus) {
+            System.out.println("Key = " + menu.getName() + ", Value = " + menu.getCandidateCookList());
+            if(menu.getCandidateCookList()==null){
+                throw  new Exception("no one can cook this cake  "+menu.getName());
+            }
+            for(String name:menu.getCandidateCookList()) {
                     Cook cook = getCookByName(name, cooks);
                     if (cook == null) {
                         throw new Exception("bussiness exception");
                     }
                     if (cook.getCanBeChoose() > cook.getChoosed()) {
                         cook.setChoosed(cook.getChoosed() + 1);
-                        result = result + entry.getKey() + ": " + name + " ";
+                        menu.setCook(name);
                         break;
                     }
                 }
         }
-        Map<String,List<String>> map1=getCookForScence(cooks,scences);
-        Map<String,List<String>> map2=new HashMap<>();
+        getCookForScence(cooks,scences);
+        for(Scence scence:scences){
+            scence.setCookList(new ArrayList<>());
+        }
         for(int i=0;isAllBeChoosed(cooks) && i<cooks.size()/scences.size();i++){
-            for (Map.Entry<String,List<String>> entry : map1.entrySet()) {
-                System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
-                Scence scence=getScenceByName(entry.getKey(),scences);
-                if(scence==null){
-                    throw new Exception("bussiness exception");
-                }
-                result=result + entry.getKey() + ": ";
-                for(String name:entry.getValue()) {
+            for (Scence scence:scences) {
+                System.out.println("Key = " + scence.getName() + ", Value = " + scence.getCandidateCookList());
+               if(scence.getCandidateCookList()==null){
+                   throw  new Exception("no one can cook this cake  "+scence.getName());
+               }
+                for(String name:scence.getCandidateCookList()) {
                     if(scence.getChoosed()==scence.getLevel()){
                         break;
                     }
@@ -99,9 +101,19 @@ public class Main {
                     if (cook.getChoosed()==0) {
                         scence.setChoosed(scence.getChoosed()+1);
                         cook.setChoosed(cook.getChoosed() + 1);
-                        result =result+ name + " ";
+                        scence.getCookList().add(name);
+                        break;
                     }
                 }
+            }
+        }
+        for(Menu menu:menus){
+            result=result+menu.getName()+": "+menu.getCook()+" ";
+        }
+        for(Scence scence:scences){
+            result=result+scence.getName()+": ";
+            for(String name:scence.getCookList()){
+                result=result+name+" ";
             }
         }
         return result;
@@ -138,12 +150,11 @@ public class Main {
          }
          return null;
     };
-   static Map<String,List<String>> getCookForMenu(ArrayList<Cook> cooks,ArrayList<Menu> menus) throws Exception {
+   static void getCookForMenu(ArrayList<Cook> cooks,ArrayList<Menu> menus) throws Exception {
        Map<String,List<String>> map=new HashMap<>();
          for(Menu menu:menus){
              ArrayList<CookMenu> cookMenus=new ArrayList<>();
             for(Cook cook:cooks){
-
                 //获取候选厨师
                 if(cook.getBoil()<menu.getBoil()){
                     continue;
@@ -197,45 +208,40 @@ public class Main {
                 cookMenus.add(cookMenu);
             }
              //排序候选厨师
-             map.put(menu.getName(),sortCookForMenu(cookMenus));
+             if(cookMenus==null){
+                 throw  new Exception("no one can cook this cake  "+menu.getName());
+             }
+             menu.setCandidateCookList(sortCookForMenu(cookMenus));
         }
-       if(map==null || map.size()<=0){
-           throw new Exception("no one can make any cake");
-       }
-        return map;
    }
-    static Map<String,List<String>>  getCookForScence(ArrayList<Cook> cooks,ArrayList<Scence> scences) throws Exception {
+    static void getCookForScence(ArrayList<Cook> cooks,ArrayList<Scence> scences) throws Exception {
         Map<String,List<String>> map=new HashMap<>();
-       for(Scence scence:scences){
-           ArrayList<CookMenu> cookMenus=new ArrayList<>();
-           for(Cook cook:cooks){
-               if(cook.getChoosed()>1){
+       for(Scence scence:scences) {
+           ArrayList<CookMenu> cookMenus = new ArrayList<>();
+           for (Cook cook : cooks) {
+               if (cook.getChoosed() > 1) {
                    continue;
                }
-               if(cook.getVege()<scence.getVege()){
+               if (cook.getVege() < scence.getVege()) {
                    continue;
                }
-               if(cook.getFish()<scence.getFish()){
+               if (cook.getFish() < scence.getFish()) {
                    continue;
                }
-               if(cook.getRice()<scence.getRice()){
+               if (cook.getRice() < scence.getRice()) {
                    continue;
                }
-               if(cook.getMeet()<scence.getMeet()){
+               if (cook.getMeet() < scence.getMeet()) {
                    continue;
                }
-               int sum=cook.getVege()+cook.getMeet()+cook.getRice()+cook.getFish();
-               CookMenu cookMenu=new CookMenu();
+               int sum = cook.getVege() + cook.getMeet() + cook.getRice() + cook.getFish();
+               CookMenu cookMenu = new CookMenu();
                cookMenu.setName(cook.getName());
                cookMenu.setWeight(sum);
                cookMenus.add(cookMenu);
            }
-           map.put(scence.getName(),sortCookForMenu(cookMenus));
+           scence.setCandidateCookList(sortCookForMenu(cookMenus));
        }
-        if(map==null || map.size()<=0){
-            throw new Exception("no one can make any collection");
-        }
-       return map;
     }
     static ArrayList<String>  sortCookForMenu(ArrayList<CookMenu> cookMenus){
          //按照权重排列

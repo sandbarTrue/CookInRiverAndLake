@@ -2,6 +2,8 @@ package com.cqcupt.imis.zj.biz;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * Created by zhoujun on 2017/11/20.
  */
@@ -16,4 +18,7 @@ public class Menu {
     private Integer slice;
     private String  level;
     private Integer amount;
+    private List<String> candidateCookList;
+    private String cook;
+
 }

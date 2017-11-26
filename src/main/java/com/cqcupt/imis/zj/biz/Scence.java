@@ -2,6 +2,8 @@ package com.cqcupt.imis.zj.biz;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * Created by zhoujun on 2017/11/20.
  */
@@ -14,5 +16,6 @@ public class Scence {
     private Integer vege;
     private Integer level;
     private Integer choosed;
-
+    private List<String> candidateCookList;
+    private List<String> cookList;
 }
