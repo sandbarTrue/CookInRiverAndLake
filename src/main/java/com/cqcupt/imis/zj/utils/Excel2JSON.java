@@ -26,57 +26,9 @@ public class Excel2JSON {
     //第二种模板类型，如下图
     private static final int HEADER_VALUE_TYPE_S = 2;
     static Excel2JSON excel2JSON = new Excel2JSON();
-
-    public static void main(String[] args) {
-        File dir = new File("J:\\爆炒江湖\\爆炒江湖.xlsx");
-        Excel2JSON excelHelper = getExcel2JSONHelper();
-        //dir文件，0代表是第一行为保存到数据库或者实体类的表头，一般为英文的字符串，2代表是第二种模板，
-        JSONObject jsonObject = excelHelper.readExcle(dir, 0, 2);
-        JSONArray arrayScence = jsonObject.getJSONArray("scence");
-        JSONArray arrayCook = jsonObject.getJSONArray("cook");
-        JSONArray arrayMenu = jsonObject.getJSONArray("menu");
-        ArrayList<Scence> scenceArrayList=new ArrayList<>();
-        ArrayList<Cook> cookArrayList=new ArrayList<>();
-        ArrayList<Menu> menuArrayList=new ArrayList<>();
-        Map<String,Menu> menuMap=new HashMap<>();
-        arrayScence.remove(0);
-        arrayScence.stream().forEach(e -> {
-            JSONObject json = JSONObject.parseObject(e.toString());
-            Scence scence = JSONObject.parseObject(json.toString(), Scence.class);
-            scenceArrayList.add(scence);
-
-        });
-        arrayCook.remove(0);
-        arrayCook.stream().forEach(e -> {
-            JSONObject json = JSONObject.parseObject(e.toString());
-            Cook cook = JSONObject.parseObject(json.toString(), Cook.class);
-            cookArrayList.add(cook);
-        });
-        arrayMenu.remove(0);
-        arrayMenu.stream().forEach(e -> {
-            JSONObject json = JSONObject.parseObject(e.toString());
-            Menu menu = JSONObject.parseObject(json.toString(), Menu.class);
-
-            menuMap.put(menu.getName(),menu);
-        });
-     String[] menus=new String[]{"牛肉煎包","葱油拌面","香菇青菜"};
-        for(String menu:menus){
-            if(menuMap.containsKey(menu)){
-                menuArrayList.add(menuMap.get(menu));
-            }
-            else{
-                continue;
-            }
-        }
-        chooseCook();
-
-    }
-   public static void chooseCook(){}
     public static Excel2JSON getExcel2JSONHelper() {
         return excel2JSON;
     }
-
-
     private boolean fileNameFileter(File file) {
         boolean endsWith = false;
         if (file != null) {
